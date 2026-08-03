@@ -7,14 +7,20 @@
 
 [functions]
   directory = "netlify/functions"
-  # zisi (Netlify's non-esbuild bundler) traces real requires/imports and
-  # copies actual files/folders, including native binaries, instead of
-  # merging everything into one JS file. Prisma's compiled query-engine
-  # file gets lost when esbuild tries to bundle it into a single file
-  # ("Cannot find module '@prisma/client'" at runtime) — zisi avoids that
-  # entirely, which is why it's the recommended bundler for Prisma on
-  # Netlify Functions specifically.
-  node_bundler = "zisi"
+  # esbuild handles this function's ESM (.mjs) syntax correctly, which the
+  # alternative bundler (zisi) doesn't — but esbuild can't bundle Prisma's
+  # native query-engine binary as JS. Keeping @prisma/client external (not
+  # bundled into the JS) and explicitly including its real files solves
+  # that, now that @prisma/client lives in root node_modules — an ancestor
+  # directory of netlify/functions, which the bundler can actually resolve
+  # (server/node_modules, a sibling directory, could not be found this way,
+  # which caused the earlier "Cannot find module '@prisma/client'" error).
+  node_bundler = "esbuild"
+  external_node_modules = ["@prisma/client"]
+  included_files = [
+    "node_modules/@prisma/client/**",
+    "node_modules/.prisma/client/**"
+  ]
 
 # The SPA calls same-origin /api/... — route that to the function instead
 # of falling through to the SPA fallback below. Uploaded prize photos are
