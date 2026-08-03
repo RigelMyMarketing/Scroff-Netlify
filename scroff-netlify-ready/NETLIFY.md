@@ -26,11 +26,11 @@ Netlify hosts static sites + serverless Functions — it can't run the
    - `ADMIN_USERNAME`, `ADMIN_PASSWORD` — for the first-run seeded admin
    - `NODE_ENV=production` (so cookies are marked `secure`)
    - Do **not** set `CORS_ORIGIN` — client and API share an origin on Netlify.
-4. Run the migration against that database once, from your machine, before
-   the first deploy (Netlify's build doesn't run migrations automatically):
-   ```bash
-   DATABASE_URL="<your pooled Neon URL>" npx --prefix server prisma migrate deploy
-   ```
+4. That's it for setup — no local `npx prisma migrate deploy` step needed.
+   `netlify-build` (root `package.json`) now runs
+   `prisma migrate deploy` itself during Netlify's build, using the
+   `DATABASE_URL` you set in step 3. It's safe to run on every deploy —
+   Prisma skips migrations that are already applied.
 
 ## Deploy
 
