@@ -1,0 +1,30 @@
+[build]
+  # Installs the root package.json deps (incl. serverless-http), then
+  # builds the client and installs/generates the server's Prisma client
+  # so the function bundle has everything it needs.
+  command = "npm run netlify-build"
+  publish = "client/dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  # @prisma/client ships a native query-engine binary that esbuild can't
+  # bundle as JS — keep it external and include the compiled engine file
+  # explicitly instead.
+  external_node_modules = ["@prisma/client"]
+  included_files = ["server/node_modules/.prisma/client/*.node"]
+
+# The SPA calls same-origin /api/... — route that to the function instead
+# of falling through to the SPA fallback below. Uploaded prize photos are
+# served from Cloudinary (full URLs), so no /uploads redirect is needed.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# Client-side routing (react-router-dom) — let the SPA handle unknown paths.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
