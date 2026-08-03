@@ -15,7 +15,10 @@ generator client {
   // netlify/functions, so the function bundler can actually find it) rather
   // than relying on automatic detection — that was landing in the wrong
   // place, leaving the deployed function with an un-generated placeholder.
-  output = "../../node_modules/@prisma/client"
+  // Must target .prisma/client (not @prisma/client directly) — Prisma
+  // refuses to overwrite its own installed package folder; imports of
+  // "@prisma/client" are automatically forwarded to ".prisma/client".
+  output = "../../node_modules/.prisma/client"
 }
 
 datasource db {
