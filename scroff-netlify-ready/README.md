@@ -35,6 +35,12 @@ scroff/
   shuffle. This is what makes "the pool refreshes after all turns are spent"
   work sensibly with many concurrent players instead of everyone fighting
   over one literal set of 50 cards.
+- **Every bowl always holds a real prize.** There's no "no prize" cell —
+  each prize's `weight` (a % out of 100, which must add up to exactly 100%
+  across all prizes) decides how many of the 50 bowls it fills. Physical
+  `qty` (stock) is completely separate — it only tracks fulfillment
+  inventory for the admin and never affects whether a prize can appear or
+  how often.
 - **"One more time" prizes refund the turn.** Any prize type can be flagged
   `isFreeRetry`. Landing on it still uses up that bowl, but the turn itself is
   credited back the moment the player finishes scratching it off.

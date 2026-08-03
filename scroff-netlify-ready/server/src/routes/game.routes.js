@@ -5,9 +5,10 @@ import { publicUrlFor } from '../lib/uploadStorage.js';
 
 export const gameRouter = Router();
 
-// What a player sees when they pick an empty bowl (no prize behind it) —
-// shaped exactly like a real serialized prize so the client doesn't need
-// any special-casing.
+// Legacy-only fallback: boards generated before every cell was guaranteed a
+// prize could contain a null cell. New boards (see generateBoard) never
+// produce one — every player always wins something — but this keeps any
+// already-existing board from crashing until it naturally regenerates.
 const NO_PRIZE = { id: null, name: 'Better luck next time!', emoji: '🙈', imageUrl: null, isFreeRetry: false };
 
 async function getConfigAndPrizeTypes() {

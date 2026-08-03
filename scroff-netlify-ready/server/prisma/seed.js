@@ -22,20 +22,26 @@ export async function ensureSeedAdmin() {
 
   const prizeCount = await prisma.prizeType.count();
   if (prizeCount === 0) {
+    // weight is set to qty * 2 here purely because these particular qty
+    // values happen to sum to 50 — i.e. this preserves the same relative
+    // proportions the original 50-slot design implied, scaled up to weights
+    // that sum to exactly 100% (now required, since every board cell always
+    // holds a prize — see generateBoard in lib/board.js). qty itself is
+    // otherwise unrelated to board odds.
     const defaults = [
-      { name: 'Grand Prize — New Phone', emoji: '📱', qty: 1 },
-      { name: 'Cash RM500', emoji: '💵', qty: 2 },
-      { name: 'Cash RM100', emoji: '💰', qty: 5 },
-      { name: 'Bluetooth Earbuds', emoji: '🎧', qty: 4 },
-      { name: 'Movie Ticket x2', emoji: '🎬', qty: 8 },
-      { name: 'Coffee Voucher', emoji: '☕', qty: 9 },
-      { name: 'RM10 Shopping Voucher', emoji: '🎫', qty: 15 },
-      { name: 'One More Time', emoji: '🔁', qty: 6, isFreeRetry: true },
+      { name: 'Grand Prize — New Phone', emoji: '📱', qty: 1, weight: 2 },
+      { name: 'Cash RM500', emoji: '💵', qty: 2, weight: 4 },
+      { name: 'Cash RM100', emoji: '💰', qty: 5, weight: 10 },
+      { name: 'Bluetooth Earbuds', emoji: '🎧', qty: 4, weight: 8 },
+      { name: 'Movie Ticket x2', emoji: '🎬', qty: 8, weight: 16 },
+      { name: 'Coffee Voucher', emoji: '☕', qty: 9, weight: 18 },
+      { name: 'RM10 Shopping Voucher', emoji: '🎫', qty: 15, weight: 30 },
+      { name: 'One More Time', emoji: '🔁', qty: 6, weight: 12, isFreeRetry: true },
     ];
     await prisma.prizeType.createMany({
       data: defaults.map((d, i) => ({ ...d, sortOrder: i })),
     });
-    console.log('Seeded a default 50-slot prize pool.');
+    console.log('Seeded a default 50-slot prize pool (odds summing to exactly 100%).');
   }
 }
 

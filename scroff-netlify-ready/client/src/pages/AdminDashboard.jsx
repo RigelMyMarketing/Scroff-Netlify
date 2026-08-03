@@ -172,7 +172,7 @@ export default function AdminDashboard() {
 
   const totalWeight = prizeTypes.reduce((s, p) => s + Number(p.weight || 0), 0);
   const totalStock = prizeTypes.reduce((s, p) => s + Number(p.qty || 0), 0);
-  const totalOk = totalWeight <= 100;
+  const totalOk = totalWeight === 100;
 
   return (
     <div id="app">
@@ -198,8 +198,9 @@ export default function AdminDashboard() {
         <div className="panel alert-banner">
           <span className="alert-icon">⚠️</span>
           <div>
-            <b>Out of stock:</b> {stockAlerts.join(', ')} — refill the quantity below or players will stop being
-            able to win {stockAlerts.length > 1 ? 'these prizes' : 'this prize'}.
+            <b>Out of stock:</b> {stockAlerts.join(', ')} — {stockAlerts.length > 1 ? 'these' : 'this'} will
+            still show up on player boards at the same odds, but there's no physical stock left to actually
+            hand out if won. Refill the quantity below when you restock.
           </div>
         </div>
       )}
@@ -207,10 +208,11 @@ export default function AdminDashboard() {
       <div className="panel">
         <h2>Prize pool</h2>
         <p className="sub">
-          Set the prizes in the pool and upload a photo for each (or leave it as an emoji). Each prize has two
-          separate numbers: <b>% odds</b> controls how often it shows up on a freshly generated board (must total up
-          to 100% across all prizes), and <b>stock</b> is physical inventory — it goes down when a player claims that
-          prize, and comes back up if you delete or clear that claim later.
+          Every bowl on the board always holds a real prize — players never land on an empty one. Each prize has
+          two separate numbers: <b>% odds</b> controls how often it shows up on a freshly generated board (must
+          add up to exactly 100% across all prizes), and <b>stock</b> is just physical inventory for your own
+          fulfillment tracking — it goes down when a player claims that prize and comes back up if you delete or
+          clear that claim later, but it has no effect on a prize's odds or whether it can appear.
         </p>
         <div className="stat-row">
           <div className={`stat-chip ${totalOk ? 'ok' : 'warn'}`}>
@@ -330,7 +332,7 @@ export default function AdminDashboard() {
         <button className="btn btn-gold" onClick={publish} disabled={!totalOk || publishing}>
           {publishing ? 'Publishing…' : '🪙 Publish changes'}
         </button>
-        {!totalOk && <span className="hint"> Reduce the prize odds to 100% or less first.</span>}
+        {!totalOk && <span className="hint"> Prize odds must add up to exactly 100% first.</span>}
       </div>
 
       <div className={`toast ${toast ? 'show' : ''}`}>{toast}</div>
