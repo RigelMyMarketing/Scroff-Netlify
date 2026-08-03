@@ -10,7 +10,16 @@ import { adminRouter } from './routes/admin.routes.js';
 import { gameRouter } from './routes/game.routes.js';
 import { playerRouter } from './routes/player.routes.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// import.meta.url is undefined when esbuild bundles this to CommonJS for
+// Netlify Functions (there's no client build alongside the function anyway,
+// see the fs.existsSync guard below) — fall back to null instead of
+// crashing the whole function on startup.
+let __dirname;
+try {
+  __dirname = path.dirname(fileURLToPath(import.meta.url));
+} catch {
+  __dirname = null;
+}
 
 export function createApp() {
   const app = express();
@@ -41,8 +50,8 @@ export function createApp() {
   // a static site and this API only ever receives /api/* traffic (see
   // netlify/functions/api.mjs + netlify.toml), so clientDist won't exist
   // there — skip this block entirely in that case instead of erroring.
-  const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
-  if (fs.existsSync(clientDist)) {
+  const clientDist = __dirname ? path.join(__dirname, '..', '..', 'client', 'dist') : null;
+  if (clientDist && fs.existsSync(clientDist)) {
     app.use(express.static(clientDist));
     app.get('*', (req, res, next) => {
       if (req.path.startsWith('/api')) return next();
