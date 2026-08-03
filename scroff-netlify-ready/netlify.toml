@@ -17,10 +17,7 @@
   # which caused the earlier "Cannot find module '@prisma/client'" error).
   node_bundler = "esbuild"
   external_node_modules = ["@prisma/client"]
-  included_files = [
-    "node_modules/@prisma/client/**",
-    "node_modules/.prisma/client/**"
-  ]
+  included_files = ["node_modules/@prisma/client/**"]
 
 # The SPA calls same-origin /api/... — route that to the function instead
 # of falling through to the SPA fallback below. Uploaded prize photos are

@@ -11,6 +11,11 @@ generator client {
   // "native" for local dev, "linux-musl-openssl-3.0.x" for the Docker/Alpine
   // deploy path, "rhel-openssl-3.0.x" for Netlify Functions (AWS Lambda).
   binaryTargets = ["native", "linux-musl-openssl-3.0.x", "rhel-openssl-3.0.x"]
+  // Force generated output to the repo-root node_modules (an ancestor of
+  // netlify/functions, so the function bundler can actually find it) rather
+  // than relying on automatic detection — that was landing in the wrong
+  // place, leaving the deployed function with an un-generated placeholder.
+  output = "../../node_modules/@prisma/client"
 }
 
 datasource db {
