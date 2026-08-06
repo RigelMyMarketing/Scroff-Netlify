@@ -72,7 +72,10 @@ export default function PrizeRow({ prize, onChange, onRemove }) {
       </div>
 
       <div className="prize-row-stats">
-        <div className="qty-stepper" title="% chance this prize appears when a board is generated — independent of stock">
+        <div
+          className="qty-stepper"
+          title="Relative odds this prize appears when a board is generated — compared only to other prizes' odds, doesn't need to add up to 100, independent of stock"
+        >
           <button
             type="button"
             className="icon-btn"
@@ -84,18 +87,17 @@ export default function PrizeRow({ prize, onChange, onRemove }) {
           <input
             type="number"
             min="0"
-            max="100"
             value={prize.weight}
-            onChange={(e) => onChange({ ...prize, weight: Math.max(0, Math.min(100, Number(e.target.value) || 0)) })}
+            onChange={(e) => onChange({ ...prize, weight: Math.max(0, Number(e.target.value) || 0) })}
           />
           <button
             type="button"
             className="icon-btn"
-            onClick={() => onChange({ ...prize, weight: Math.min(100, Number(prize.weight || 0) + 1) })}
+            onClick={() => onChange({ ...prize, weight: Number(prize.weight || 0) + 1 })}
           >
             +
           </button>
-          <small className="stepper-label">% odds</small>
+          <small className="stepper-label">odds</small>
         </div>
 
         <div className="qty-stepper" title="Physical stock remaining — goes down on claim, comes back if you delete that claim">

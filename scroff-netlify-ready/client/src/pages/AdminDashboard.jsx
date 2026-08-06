@@ -172,7 +172,7 @@ export default function AdminDashboard() {
 
   const totalWeight = prizeTypes.reduce((s, p) => s + Number(p.weight || 0), 0);
   const totalStock = prizeTypes.reduce((s, p) => s + Number(p.qty || 0), 0);
-  const totalOk = totalWeight === 100;
+  const totalOk = totalWeight > 0;
 
   return (
     <div id="app">
@@ -209,14 +209,16 @@ export default function AdminDashboard() {
         <h2>Prize pool</h2>
         <p className="sub">
           Every bowl on the board always holds a real prize — players never land on an empty one. Each prize has
-          two separate numbers: <b>% odds</b> controls how often it shows up on a freshly generated board (must
-          add up to exactly 100% across all prizes), and <b>stock</b> is just physical inventory for your own
-          fulfillment tracking — it goes down when a player claims that prize and comes back up if you delete or
-          clear that claim later, but it has no effect on a prize's odds or whether it can appear.
+          two separate numbers: <b>% odds</b> sets how often it shows up <i>relative to the others</i> — these
+          don't need to add up to 100. Enter 10/20/20 or 20/40/40 and you'll get the exact same board, since the
+          system automatically scales whatever you enter to fill the board proportionally. <b>Stock</b> is a
+          completely separate number, just for your own fulfillment tracking — it goes down when a player claims
+          that prize and comes back up if you delete or clear that claim later, but it has no effect on a prize's
+          odds or whether it can appear.
         </p>
         <div className="stat-row">
           <div className={`stat-chip ${totalOk ? 'ok' : 'warn'}`}>
-            Odds assigned <b>{totalWeight}%</b> / 100%
+            Odds assigned <b>{totalWeight}</b> (relative — auto-scaled to fill the board)
           </div>
           <div className="stat-chip">
             Total stock <b>{totalStock}</b> units
@@ -332,7 +334,7 @@ export default function AdminDashboard() {
         <button className="btn btn-gold" onClick={publish} disabled={!totalOk || publishing}>
           {publishing ? 'Publishing…' : '🪙 Publish changes'}
         </button>
-        {!totalOk && <span className="hint"> Prize odds must add up to exactly 100% first.</span>}
+        {!totalOk && <span className="hint"> Give at least one prize odds above 0% first.</span>}
       </div>
 
       <div className={`toast ${toast ? 'show' : ''}`}>{toast}</div>

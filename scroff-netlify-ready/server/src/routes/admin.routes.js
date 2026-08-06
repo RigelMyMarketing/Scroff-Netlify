@@ -234,10 +234,10 @@ adminRouter.put('/settings', async (req, res) => {
 adminRouter.post('/publish', async (req, res) => {
   const prizeTypes = await prisma.prizeType.findMany();
   const total = totalWeight(prizeTypes);
-  if (Math.round(total) !== 100) {
+  if (total <= 0) {
     return res
       .status(400)
-      .json({ error: `Prize weights must add up to exactly 100%, currently ${total}%` });
+      .json({ error: 'Give at least one prize odds above 0% before publishing' });
   }
   const config = await prisma.drawConfig.upsert({
     where: { id: 1 },

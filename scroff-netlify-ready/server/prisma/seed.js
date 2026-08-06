@@ -22,12 +22,12 @@ export async function ensureSeedAdmin() {
 
   const prizeCount = await prisma.prizeType.count();
   if (prizeCount === 0) {
-    // weight is set to qty * 2 here purely because these particular qty
-    // values happen to sum to 50 — i.e. this preserves the same relative
-    // proportions the original 50-slot design implied, scaled up to weights
-    // that sum to exactly 100% (now required, since every board cell always
-    // holds a prize — see generateBoard in lib/board.js). qty itself is
-    // otherwise unrelated to board odds.
+    // weight is set to qty * 2 here purely to preserve the same relative
+    // proportions the original 50-slot design implied. These happen to sum
+    // to 100, but that's not required — the board proportionally scales
+    // whatever weights are set to always fill all 50 cells (see
+    // generateBoard in lib/board.js). qty itself is otherwise unrelated to
+    // board odds.
     const defaults = [
       { name: 'Grand Prize — New Phone', emoji: '📱', qty: 1, weight: 2 },
       { name: 'Cash RM500', emoji: '💵', qty: 2, weight: 4 },
